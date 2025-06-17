@@ -1,4 +1,4 @@
-package com.hmall.domain.po;
+package com.hmall.cart.domain.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
