@@ -5,6 +5,7 @@ target/
 .vscode/
 bin/
 out/
+logs/
 
 # ignore these files
 .classpath
