@@ -5,6 +5,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmall.cart.client.ItemClient;
 import com.hmall.cart.domain.dto.CartFormDTO;
 import com.hmall.cart.domain.dto.ItemDTO;
 import com.hmall.cart.domain.po.Cart;
@@ -51,6 +52,8 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
 
     private final DiscoveryClient discoveryClient;
 
+    private final ItemClient itemClient;
+
     @Override
     public void addItem2Cart(CartFormDTO cartFormDTO) {
         // 1.获取登录用户
@@ -93,37 +96,11 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements IC
     }
 
     private void handleCartItems(List<CartVO> vos) {
-        // TODO 处理商品信息
+
         // 1.获取商品id
         Set<Long> itemIds = vos.stream().map(CartVO::getItemId).collect(Collectors.toSet());
-        // 2.查询商品
-        //List<ItemDTO> items = itemService.queryItemByIds(itemIds);
 
-        // 2.1 根据服务名称获取服务的实例列表
-        List<ServiceInstance> servuceInstances = discoveryClient.getInstances("item-service");
-        if (CollUtil.isEmpty(servuceInstances)) {
-            return;
-        }
-
-        // 2.2 手写负载均衡，从服务列表挑选一个实例
-        ServiceInstance serviceInstance = servuceInstances.get(RandomUtil.randomInt(servuceInstances.size()));
-
-        // 2.3 利用RestTemplate发起http请求
-        ResponseEntity<List<ItemDTO>> response = restTemplate.exchange(
-                serviceInstance.getUri() + "/items?ids={ids}",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<ItemDTO>>() {
-                },
-                Map.of("ids", CollUtil.join(itemIds, ",")) // jdk11的高级功能
-        );
-        // 2.2解析响应
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            //查询失败
-            return;
-        }
-        List<ItemDTO> items = response.getBody();
-
+        List<ItemDTO> items = itemClient.queryItemByIds(itemIds);
 
         if (CollUtils.isEmpty(items)) {
             return;
