@@ -1,6 +1,7 @@
-package com.hmall.service;
+package com.hmall.user.service;
 
-import com.hmall.domain.po.Address;
+
+import com.hmall.user.domain.po.Address;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

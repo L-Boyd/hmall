@@ -1,8 +1,9 @@
-package com.hmall.service.impl;
+package com.hmall.user.service.impl;
 
-import com.hmall.domain.po.Address;
-import com.hmall.mapper.AddressMapper;
-import com.hmall.service.IAddressService;
+
+import com.hmall.user.domain.po.Address;
+import com.hmall.user.mapper.AddressMapper;
+import com.hmall.user.service.IAddressService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
