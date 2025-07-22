@@ -1,0 +1,6 @@
+hm:
+  db:
+    host: ${mysql.host}
+    pw: ${mysql.password}
+  nacos:
+    address: ${nacos.address}
