@@ -18,6 +18,8 @@ spring:
           uri: lb://item-service # 路由目标,lb代表负载均衡
           predicates: # 断言/路由规则
             - Path=/items/**, /search/**
+          filters:
+            - AddRequestHeader=truth, where is a will where is a way
         - id: user-service
           uri: lb://user-service
           predicates:
@@ -34,3 +36,5 @@ spring:
           uri: lb://pay-service
           predicates:
             - Path=/pay-orders/**
+      default-filters:
+        - AddRequestHeader=default-filters-k, default-filters-v
