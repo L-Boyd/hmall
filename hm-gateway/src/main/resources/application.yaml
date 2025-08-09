@@ -38,3 +38,4 @@ spring:
             - Path=/pay-orders/**
       default-filters:
         - AddRequestHeader=default-filters-k, default-filters-v
+        - PrintAny
