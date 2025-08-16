@@ -20,18 +20,22 @@ spring:
             - Path=/items/**, /search/**
           filters:
             - AddRequestHeader=truth, where is a will where is a way
+
         - id: user-service
           uri: lb://user-service
           predicates:
             - Path=/addresses/**, /users/**
-        - id: user-service
-          uri: lb://user-service
+
+        - id: cart-service
+          uri: lb://cart-service
           predicates:
-            - Path=/addresses/**, /users/**
+            - Path=/carts/**
+
         - id: trade-service
           uri: lb://trade-service
           predicates:
             - Path=/orders/**
+
         - id: pay-service
           uri: lb://pay-service
           predicates:
@@ -40,3 +44,16 @@ spring:
         - AddRequestHeader=default-filters-k, default-filters-v
         - PrintAny
         - PrintAnySecond=1,2,3
+
+hm:
+  jwt:
+    location: classpath:hmall.jks
+    alias: hmall
+    password: hmall123
+    tokenTTL: 30m
+  auth:
+    excludePaths:
+      - /search/**
+      - /users/login
+      - /items/**
+      - /hi
