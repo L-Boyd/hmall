@@ -2,5 +2,9 @@ hm:
   db:
     host: ${mysql.host}
     pw: ${mysql.password}
+    database: hm-cart
+  swagger:
+    title: "购物车服务接口文档"
+    package: com.hmall.cart.controller
   nacos:
     address: ${nacos.address}
