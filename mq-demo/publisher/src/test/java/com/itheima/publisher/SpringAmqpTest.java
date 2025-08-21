@@ -24,4 +24,13 @@ class SpringAmqpTest {
         rabbitTemplate.convertAndSend(queueName, message);
     }
 
+    @Test
+    public void testWorkQueue() {
+        String queueName = "work.queue";
+        for (int i = 0; i < 50; i++) {
+            String message = "hello, spring amqp" + i;
+            rabbitTemplate.convertAndSend(queueName, message);
+        }
+    }
+
 }

@@ -8,3 +8,6 @@ spring:
     virtual-host: /hmall  # 虚拟主机
     username: hmall
     password: ${rabbitmq.password}
+    listener:
+      simple:
+        prefetch: 1 # 每次只能获取一条消息，处理完成才能获取下一条消息，实现”能者多劳“
