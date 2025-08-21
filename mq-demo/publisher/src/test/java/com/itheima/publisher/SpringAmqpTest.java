@@ -33,4 +33,13 @@ class SpringAmqpTest {
         }
     }
 
+    @Test
+    public void testFanoutExchange() {
+        // 交换机名字
+        String exchangeName = "hmall.fanout";
+        // 消息
+        String message = "hello, fanout";
+        // 发送消息
+        rabbitTemplate.convertAndSend(exchangeName, null, message);
+    }
 }
