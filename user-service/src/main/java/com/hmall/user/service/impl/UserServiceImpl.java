@@ -75,6 +75,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         // 2.尝试扣款
+        Integer balance = user.getBalance();
+        if(balance < totalFee) {
+            throw new BizIllegalException("余额不足");
+        }
         try {
             baseMapper.updateMoney(UserContext.getUser(), totalFee);
         } catch (Exception e) {
