@@ -11,3 +11,4 @@ spring:
     listener:
       simple:
         prefetch: 1 # 每次只能获取一条消息，处理完成才能获取下一条消息，实现”能者多劳“
+        acknowledge-mode: auto # none：消息投递给消费者后立刻ack，manual：手动确认，auto：SpringAMQP利用AOP进行环绕增强，业务正常执行则返回ack

@@ -18,6 +18,7 @@ public class SpringRabbitListener {
     @RabbitListener(queues = "simple.queue")
     public void listenSimpleQueue(String message) {
         log.info("spring 消费者收到消息：{}", message);
+        throw new RuntimeException("模拟报错");
     }
 
     @RabbitListener(queues = "work.queue")
