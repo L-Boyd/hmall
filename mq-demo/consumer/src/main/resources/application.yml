@@ -7,8 +7,14 @@ spring:
     port: 5672
     virtual-host: /hmall  # 虚拟主机
     username: hmall
-    password: ${rabbitmq.password}
+    password: 1212qweasdzxc
     listener:
       simple:
         prefetch: 1 # 每次只能获取一条消息，处理完成才能获取下一条消息，实现”能者多劳“
         acknowledge-mode: auto # none：消息投递给消费者后立刻ack，manual：手动确认，auto：SpringAMQP利用AOP进行环绕增强，业务正常执行则返回ack
+        retry:
+          enabled: true # 开启失败重试
+          max-attempts: 3 # 最大重试次数
+          initial-interval: 1000ms # 初始重试间隔
+          multiplier: 2 # 重试间隔 multiplier 倍数增加
+          stateless: true # 无状态
