@@ -2,6 +2,7 @@ package com.itheima.consumer.mq;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
@@ -16,8 +17,9 @@ import java.util.Map;
 public class SpringRabbitListener {
 
     @RabbitListener(queues = "simple.queue")
-    public void listenSimpleQueue(String message) {
-        log.info("spring 消费者收到消息：{}", message);
+    public void listenSimpleQueue(Message message) {
+        log.info("spring 消费者收到消息ID：{}", message.getMessageProperties().getMessageId());
+        log.info("spring 消费者收到消息：{}", new String(message.getBody()));
         throw new RuntimeException("模拟报错");
     }
 

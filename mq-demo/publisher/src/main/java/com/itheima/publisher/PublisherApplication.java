@@ -14,6 +14,9 @@ public class PublisherApplication {
 
     @Bean
     public MessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
+        Jackson2JsonMessageConverter jjmc = new Jackson2JsonMessageConverter();
+        // 开启自动生成消息id功能，for幂等
+        jjmc.setCreateMessageIds(true);
+        return jjmc;
     }
 }
