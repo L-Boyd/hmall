@@ -1,8 +1,15 @@
 package com.hmall.item.es;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
+import com.hmall.item.domain.po.Item;
+import com.hmall.item.domain.po.ItemDoc;
+import com.hmall.item.service.IItemService;
+import com.hmall.item.service.impl.ItemServiceImpl;
 import net.sf.jsqlparser.statement.create.index.CreateIndex;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -13,9 +20,12 @@ import org.elasticsearch.xcontent.XContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 
+@SpringBootTest(properties = "spring.profiles.active=dev")
 public class ElasticSearchTest {
 
     private RestHighLevelClient client;
@@ -64,6 +74,11 @@ public class ElasticSearchTest {
             "  }\n" +
             "}";
 
+    @Autowired
+    private IItemService iItemService;
+    @Autowired
+    private ItemServiceImpl itemService;
+
     @BeforeEach
     void setUp() {
         client = new RestHighLevelClient(RestClient.builder(
@@ -109,5 +124,21 @@ public class ElasticSearchTest {
         DeleteIndexRequest request = new DeleteIndexRequest("items");
         // 发送请求
         client.indices().delete(request, RequestOptions.DEFAULT);
+    }
+
+    @Test
+    void testCreateDocument() throws IOException {
+        // 准备文档数据
+        Item item = itemService.getById(317578L);
+        ItemDoc itemDoc = BeanUtil.copyProperties(item, ItemDoc.class);
+
+        // Request对象
+        IndexRequest request = new IndexRequest("items").id(itemDoc.getId());
+
+        // 请求参数
+        request.source(JSONUtil.toJsonStr(itemDoc), XContentType.JSON);
+
+        // 发送请求
+        client.index(request, RequestOptions.DEFAULT);
     }
 }
