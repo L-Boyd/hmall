@@ -6,6 +6,8 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.xcontent.XContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,5 +90,15 @@ public class ElasticSearchTest {
         request.source(CREATE_INDEX_TEMPLATE, XContentType.JSON);
         // 发送请求
         client.indices().create(request, RequestOptions.DEFAULT);
+    }
+
+    @Test
+    void testGetIndex() throws IOException {
+        // Request对象
+        GetIndexRequest request = new GetIndexRequest("items");
+        // 发送请求
+        boolean exists = client.indices().exists(request, RequestOptions.DEFAULT);
+        System.out.println("exists = " + exists);
+        //GetIndexResponse response = client.indices().get(request, RequestOptions.DEFAULT);
     }
 }
