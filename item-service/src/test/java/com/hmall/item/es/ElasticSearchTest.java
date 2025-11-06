@@ -2,6 +2,7 @@ package com.hmall.item.es;
 
 import net.sf.jsqlparser.statement.create.index.CreateIndex;
 import org.apache.http.HttpHost;
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -100,5 +101,13 @@ public class ElasticSearchTest {
         boolean exists = client.indices().exists(request, RequestOptions.DEFAULT);
         System.out.println("exists = " + exists);
         //GetIndexResponse response = client.indices().get(request, RequestOptions.DEFAULT);
+    }
+
+    @Test
+    void testDeleteIndex() throws IOException {
+        // Request对象
+        DeleteIndexRequest request = new DeleteIndexRequest("items");
+        // 发送请求
+        client.indices().delete(request, RequestOptions.DEFAULT);
     }
 }
