@@ -2,6 +2,7 @@ package com.hmall.item.es;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hmall.item.domain.po.Item;
 import com.hmall.item.domain.po.ItemDoc;
 import com.hmall.item.service.IItemService;
@@ -9,6 +10,7 @@ import com.hmall.item.service.impl.ItemServiceImpl;
 import net.sf.jsqlparser.statement.create.index.CreateIndex;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
@@ -29,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.List;
 
 @SpringBootTest(properties = "spring.profiles.active=dev")
 public class ElasticSearchTest {
@@ -205,5 +208,43 @@ public class ElasticSearchTest {
 
         // 发送请求
         client.update(request, RequestOptions.DEFAULT);
+    }
+
+    /**
+     * 测试文档批处理
+     * @throws IOException
+     */
+    @Test
+    void testDocumentBulk() throws IOException {
+        int pageNo = 1;
+        int pageSize = 500;
+        // 准备文档数据
+        while (true) {
+            Page<Item> page = itemService.lambdaQuery()
+                    .eq(Item::getStatus, 1)
+                    .page(Page.of(pageNo, pageSize));
+            List<Item> records = page.getRecords();
+            if (records == null || records.isEmpty()) {
+                return;
+            }
+
+            // Request对象
+            BulkRequest request = new BulkRequest();
+
+            // 请求参数
+            for (Item item : records) {
+                ItemDoc itemDoc = BeanUtil.copyProperties(item, ItemDoc.class);
+                IndexRequest indexRequest = new IndexRequest("items")
+                        .id(itemDoc.getId())
+                        .source(JSONUtil.toJsonStr(itemDoc), XContentType.JSON);
+                request.add(indexRequest);
+            }
+
+            // 发送请求
+            client.bulk(request, RequestOptions.DEFAULT);
+
+            // 翻页
+            pageNo++;
+        }
     }
 }
