@@ -9,6 +9,8 @@ import com.hmall.item.service.impl.ItemServiceImpl;
 import net.sf.jsqlparser.statement.create.index.CreateIndex;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.get.GetRequest;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -140,5 +142,17 @@ public class ElasticSearchTest {
 
         // 发送请求
         client.index(request, RequestOptions.DEFAULT);
+    }
+
+    @Test
+    void testGetDocument() throws IOException {
+        // Request对象
+        GetRequest request = new GetRequest("items","317578");
+        // 发送请求
+        GetResponse response = client.get(request, RequestOptions.DEFAULT);
+        // 解析响应结果
+        String json = response.getSourceAsString();
+        ItemDoc doc = JSONUtil.toBean(json, ItemDoc.class);
+        System.out.println("doc = " + doc);
     }
 }
