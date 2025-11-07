@@ -9,6 +9,7 @@ import com.hmall.item.service.impl.ItemServiceImpl;
 import net.sf.jsqlparser.statement.create.index.CreateIndex;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -154,5 +155,13 @@ public class ElasticSearchTest {
         String json = response.getSourceAsString();
         ItemDoc doc = JSONUtil.toBean(json, ItemDoc.class);
         System.out.println("doc = " + doc);
+    }
+
+    @Test
+    void testDeleteDocument() throws IOException {
+        // Request对象
+        DeleteRequest request = new DeleteRequest("items","317578");
+        // 发送请求
+        client.delete(request, RequestOptions.DEFAULT);
     }
 }
