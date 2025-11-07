@@ -13,6 +13,7 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -163,5 +164,27 @@ public class ElasticSearchTest {
         DeleteRequest request = new DeleteRequest("items","317578");
         // 发送请求
         client.delete(request, RequestOptions.DEFAULT);
+    }
+
+    /**
+     * 测试全量更新
+     * @throws IOException
+     */
+    @Test
+    void testFullUpdateDocument() throws IOException {
+        // 准备文档数据
+        Item item = itemService.getById(317578L);
+        ItemDoc itemDoc = BeanUtil.copyProperties(item, ItemDoc.class);
+        itemDoc.setPrice(29900);
+
+        // Request对象
+        IndexRequest request = new IndexRequest("items").id(itemDoc.getId());
+
+        // 请求参数
+        request.source(JSONUtil.toJsonStr(itemDoc), XContentType.JSON);
+
+        // 发送请求
+        IndexResponse response = client.index(request, RequestOptions.DEFAULT);
+        System.out.println("response = " + response);
     }
 }
