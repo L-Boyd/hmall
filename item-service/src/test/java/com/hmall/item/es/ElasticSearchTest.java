@@ -14,6 +14,7 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
@@ -186,5 +187,23 @@ public class ElasticSearchTest {
         // 发送请求
         IndexResponse response = client.index(request, RequestOptions.DEFAULT);
         System.out.println("response = " + response);
+    }
+
+    /**
+     * 测试局部更新
+     * @throws IOException
+     */
+    @Test
+    void testPartialUpdateDocument() throws IOException {
+        // Request对象
+        UpdateRequest request = new UpdateRequest("items", "317578");
+
+        // 请求参数
+        request.doc(
+                "price", 25600
+        );
+
+        // 发送请求
+        client.update(request, RequestOptions.DEFAULT);
     }
 }
