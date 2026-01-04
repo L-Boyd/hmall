@@ -1,14 +1,12 @@
 package com.hmall.item.es;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hmall.item.domain.po.Item;
 import com.hmall.item.domain.po.ItemDoc;
 import com.hmall.item.service.IItemService;
 import com.hmall.item.service.impl.ItemServiceImpl;
-import net.sf.jsqlparser.statement.create.index.CreateIndex;
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequest;
@@ -25,8 +23,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.client.indices.GetIndexResponse;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -258,6 +255,11 @@ public class ElasticSearchTest {
         }
     }
 
+    /**
+     * 测试查询所有文档
+     *
+     * @throws IOException
+     */
     @Test
     void testMatchAll() throws IOException {
         SearchRequest request = new SearchRequest("items");
@@ -269,6 +271,10 @@ public class ElasticSearchTest {
 
         //System.out.println("response = " + response);
 
+        printResponseResult(response);
+    }
+
+    private static void printResponseResult(SearchResponse response) {
         // 解析响应结果
         SearchHits searchHits = response.getHits();
         // 总条数
