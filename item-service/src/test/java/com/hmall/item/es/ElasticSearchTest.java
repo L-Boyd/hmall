@@ -1,6 +1,7 @@
 package com.hmall.item.es;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hmall.item.domain.po.Item;
@@ -27,6 +28,8 @@ import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.xcontent.XContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -157,7 +160,7 @@ public class ElasticSearchTest {
     @Test
     void testGetDocument() throws IOException {
         // Request对象
-        GetRequest request = new GetRequest("items","317578");
+        GetRequest request = new GetRequest("items", "317578");
         // 发送请求
         GetResponse response = client.get(request, RequestOptions.DEFAULT);
         // 解析响应结果
@@ -169,13 +172,14 @@ public class ElasticSearchTest {
     @Test
     void testDeleteDocument() throws IOException {
         // Request对象
-        DeleteRequest request = new DeleteRequest("items","317578");
+        DeleteRequest request = new DeleteRequest("items", "317578");
         // 发送请求
         client.delete(request, RequestOptions.DEFAULT);
     }
 
     /**
      * 测试全量更新
+     *
      * @throws IOException
      */
     @Test
@@ -198,6 +202,7 @@ public class ElasticSearchTest {
 
     /**
      * 测试局部更新
+     *
      * @throws IOException
      */
     @Test
@@ -216,6 +221,7 @@ public class ElasticSearchTest {
 
     /**
      * 测试文档批处理
+     *
      * @throws IOException
      */
     @Test
@@ -261,6 +267,19 @@ public class ElasticSearchTest {
         // 发送请求
         SearchResponse response = client.search(request, RequestOptions.DEFAULT);
 
-        System.out.println("response = " + response);
+        //System.out.println("response = " + response);
+
+        // 解析响应结果
+        SearchHits searchHits = response.getHits();
+        // 总条数
+        long total = searchHits.getTotalHits().value;
+        System.out.println("total = " + total);
+        // 命中的数据
+        SearchHit[] hits = searchHits.getHits();
+        for (SearchHit hit : hits) {
+            String sourceAsString = hit.getSourceAsString();
+            ItemDoc doc = JSONUtil.toBean(sourceAsString, ItemDoc.class);
+            System.out.println("doc = " + doc);
+        }
     }
 }
