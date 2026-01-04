@@ -16,6 +16,8 @@ import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
@@ -23,6 +25,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.client.indices.GetIndexResponse;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.xcontent.XContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,7 +94,7 @@ public class ElasticSearchTest {
     @BeforeEach
     void setUp() {
         client = new RestHighLevelClient(RestClient.builder(
-                HttpHost.create("http://192.168.1.7:9200")
+                HttpHost.create("http://192.168.1.12:9200")
         ));
     }
 
@@ -246,5 +250,17 @@ public class ElasticSearchTest {
             // 翻页
             pageNo++;
         }
+    }
+
+    @Test
+    void testMatchAll() throws IOException {
+        SearchRequest request = new SearchRequest("items");
+        // request参数
+        request.source()
+                .query(QueryBuilders.matchAllQuery());
+        // 发送请求
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+
+        System.out.println("response = " + response);
     }
 }
