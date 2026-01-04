@@ -288,4 +288,28 @@ public class ElasticSearchTest {
             System.out.println("doc = " + doc);
         }
     }
+
+    /**
+     * 测试查询符合条件的文档，
+     * 搜索关键字：脱脂牛奶，
+     * 品牌：德亚，
+     * 价格；低于300
+     *
+     * @throws IOException
+     */
+    @Test
+    void testSearchWithRequirement() throws IOException {
+        SearchRequest request = new SearchRequest("items");
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+                .must(QueryBuilders.matchQuery("name", "脱脂牛奶"))
+                .filter(QueryBuilders.matchQuery("brand", "德亚"))
+                .filter(QueryBuilders.rangeQuery("price").lt(30000));
+        request.source()
+                .query(queryBuilder);
+
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+
+        // 解析响应结果
+        printResponseResult(response);
+    }
 }
