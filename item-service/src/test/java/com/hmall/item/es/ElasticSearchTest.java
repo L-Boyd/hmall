@@ -27,6 +27,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.xcontent.XContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -205,11 +206,11 @@ public class ElasticSearchTest {
     @Test
     void testPartialUpdateDocument() throws IOException {
         // Request对象
-        UpdateRequest request = new UpdateRequest("items", "317578");
+        UpdateRequest request = new UpdateRequest("items", "896020");
 
         // 请求参数
         request.doc(
-                "price", 25600
+                "sold", 3
         );
 
         // 发送请求
@@ -299,13 +300,24 @@ public class ElasticSearchTest {
      */
     @Test
     void testSearchWithRequirement() throws IOException {
+        // 模拟前端传递的分页参数
+        int pageNo = 1;
+        int pageSize = 20;
+
         SearchRequest request = new SearchRequest("items");
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
                 .must(QueryBuilders.matchQuery("name", "脱脂牛奶"))
-                .filter(QueryBuilders.matchQuery("brand", "德亚"))
-                .filter(QueryBuilders.rangeQuery("price").lt(30000));
+                .filter(QueryBuilders.termQuery("brand", "德亚"));
+                //.filter(QueryBuilders.rangeQuery("price").lt(30000));
         request.source()
-                .query(queryBuilder);
+                .query(queryBuilder)
+                // 分页和排序
+                .from((pageNo - 1) * pageSize)    // 从第(pageNo - 1) * pageSize条开始
+                .size(pageSize)    // 每页显示pageSize条
+                .sort("sold", SortOrder.DESC)   // 先按销量降序
+                .sort("price", SortOrder.ASC);    // 销量相同，则按价格升序排序
+
+
 
         SearchResponse response = client.search(request, RequestOptions.DEFAULT);
 
