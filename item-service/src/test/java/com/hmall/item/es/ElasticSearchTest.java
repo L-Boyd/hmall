@@ -1,6 +1,7 @@
 package com.hmall.item.es;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hmall.item.domain.po.Item;
@@ -27,6 +28,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.xcontent.XContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -37,6 +40,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest(properties = "spring.profiles.active=dev")
 public class ElasticSearchTest {
@@ -286,6 +290,15 @@ public class ElasticSearchTest {
         for (SearchHit hit : hits) {
             String sourceAsString = hit.getSourceAsString();
             ItemDoc doc = JSONUtil.toBean(sourceAsString, ItemDoc.class);
+
+            // 处理高亮结果
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            if (CollUtil.isNotEmpty(highlightFields)) {
+                HighlightField name = highlightFields.get("name");
+                String highLightName = name.getFragments()[0].string();
+                doc.setName(highLightName);
+            }
+
             System.out.println("doc = " + doc);
         }
     }
@@ -315,8 +328,8 @@ public class ElasticSearchTest {
                 .from((pageNo - 1) * pageSize)    // 从第(pageNo - 1) * pageSize条开始
                 .size(pageSize)    // 每页显示pageSize条
                 .sort("sold", SortOrder.DESC)   // 先按销量降序
-                .sort("price", SortOrder.ASC);    // 销量相同，则按价格升序排序
-
+                .sort("price", SortOrder.ASC)    // 销量相同，则按价格升序排序
+                .highlighter(SearchSourceBuilder.highlight().field("name"));
 
 
         SearchResponse response = client.search(request, RequestOptions.DEFAULT);
