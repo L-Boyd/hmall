@@ -28,6 +28,10 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
@@ -321,7 +325,7 @@ public class ElasticSearchTest {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
                 .must(QueryBuilders.matchQuery("name", "脱脂牛奶"))
                 .filter(QueryBuilders.termQuery("brand", "德亚"));
-                //.filter(QueryBuilders.rangeQuery("price").lt(30000));
+        //.filter(QueryBuilders.rangeQuery("price").lt(30000));
         request.source()
                 .query(queryBuilder)
                 // 分页和排序
@@ -336,5 +340,40 @@ public class ElasticSearchTest {
 
         // 解析响应结果
         printResponseResult(response);
+    }
+
+    /**
+     * 测试聚合
+     *
+     * @throws IOException
+     */
+    @Test
+    void testSearchWithAggregation() throws IOException {
+        SearchRequest request = new SearchRequest("items");
+        String brandAggName = "brandAggregation";
+        request.source()
+                // 分页和排序
+                .size(0)
+                .aggregation(AggregationBuilders
+                        .terms("brandAggregation")
+                        .field("brand")
+                        .size(10));
+
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+
+        //System.out.println("response = " + response);
+        // 解析响应结果
+        Aggregations aggregations = response.getAggregations();
+        // 根据聚合名称获取聚合结果（Aggregation是个接口，Terms是它的实现类）
+        Terms brandAggregation = aggregations.get(brandAggName);
+        // 获取桶
+        List<? extends Terms.Bucket> buckets = brandAggregation.getBuckets();
+        // 遍历桶，获取品牌和文档数量
+        for (Terms.Bucket bucket : buckets) {
+            String brand = bucket.getKeyAsString();
+            long count = bucket.getDocCount();
+            System.out.print("brand = " + brand);
+            System.out.println("，count = " + count);
+        }
     }
 }
