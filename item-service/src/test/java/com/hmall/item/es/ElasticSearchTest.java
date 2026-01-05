@@ -364,7 +364,7 @@ public class ElasticSearchTest {
         //System.out.println("response = " + response);
         // 解析响应结果
         Aggregations aggregations = response.getAggregations();
-        // 根据聚合名称获取聚合结果（Aggregation是个接口，Terms是它的实现类）
+        // 根据聚合名称获取聚合结果（Aggregation是个接口，Terms是它的子接口）
         Terms brandAggregation = aggregations.get(brandAggName);
         // 获取桶
         List<? extends Terms.Bucket> buckets = brandAggregation.getBuckets();
