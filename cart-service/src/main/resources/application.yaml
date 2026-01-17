@@ -16,3 +16,10 @@ server:
 feign:
   okhttp:
     enabled: true
+
+spring:
+  cloud:
+    sentinel:
+      transport:
+        dashboard: localhost:8090 #  sentinel 控制台地址
+      http-method-specify: true # 显示请求方式前缀
