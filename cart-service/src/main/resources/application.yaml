@@ -1,5 +1,10 @@
 server:
   port: 8082
+  tomcat:
+    threads:
+      max: 25 # 允许最大线程数
+    accept-count: 25 # 线程占满后，请求队列最大长度
+    max-connections: 100 # 最大连接数
   jwt:
     location: classpath:hmall.jks
     alias: hmall
