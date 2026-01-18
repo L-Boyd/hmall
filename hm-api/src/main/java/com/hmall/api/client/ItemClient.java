@@ -1,6 +1,7 @@
 package com.hmall.api.client;
 
 
+import com.hmall.api.client.fallback.ItemClientFallbackFactory;
 import com.hmall.api.dto.ItemDTO;
 import com.hmall.api.dto.OrderDetailDTO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -10,7 +11,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-@FeignClient("item-service")    //要提供的服务
+@FeignClient(value = "item-service", fallbackFactory = ItemClientFallbackFactory.class)    //要提供的服务
 public interface ItemClient {
 
     @GetMapping("/items")

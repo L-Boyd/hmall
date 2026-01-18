@@ -21,6 +21,8 @@ server:
 feign:
   okhttp:
     enabled: true
+  sentinel:
+    enabled: true # 开启 sentinel 对 feign 的支持
 
 spring:
   cloud:
